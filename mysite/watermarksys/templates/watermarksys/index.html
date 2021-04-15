@@ -1,9 +1,10 @@
-{% if latest_question_list %}
-    <ul>
-    {% for question in latest_question_list %}
-        {{ question.phone }}
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No polls are available.</p>
-{% endif %}
+
+{% load static %}
+<link rel="stylesheet" href="{% static 'watermarksys/lib/css/bootstrap.min.css' %}">
+<form action="{% url 'login'%}" method="post">
+    {% csrf_token %}
+    <p>phone:<input type="text" name="phone"></p>
+    <p>password:<input type="text" name="password"></p>
+    <input type="submit" value="submit">
+</form>
+<a href="{% url 'getregister'%}"><button>注册</button></a>

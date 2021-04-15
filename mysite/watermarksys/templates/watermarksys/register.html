@@ -1,0 +1,6 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'watermarksys/lib/css/bootstrap.min.css' %}">
+{% for path in imagepath %}
+
+<img src="{% static 'watermarksys'%}{{path.syspath}}" class="img-fluid" alt="failed">
+{% endfor %}
