@@ -82,7 +82,7 @@ DATABASES = {
         'NAME': 'watermark',     # 数据库名
         'USER': 'root',     # 用户名
         'PASSWORD': 'ccgj1999',  # 密码
-        'HOST': '47.115.123.199',
+        'HOST': '182.61.42.165',
         'PORT': '3306',
 
     }
@@ -131,3 +131,18 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAUTLT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticted',
+    ),
+    'DEFAUTLT_AUTHENTICAATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+    )
+}
+import datetime
+
+JWT_AUTH = {
+    # 指明Token的有效期
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=300),
+}
