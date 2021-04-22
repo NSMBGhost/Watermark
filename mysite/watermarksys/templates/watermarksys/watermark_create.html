@@ -29,6 +29,9 @@
 <div>
         <input type="file" name="file" id="file_upload">
         <input type="button" value="上传" onclick="FileUpload()">
+        {% for path in imagepath %}
+        <img src="{% static 'watermarksys'%}{{path.syspath}}" class="img-fluid" alt="failed">
+        {% endfor %}
 </div>
 </body>
 </html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.css" rel="stylesheet"/>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.js"></script>
+    <script>
+        //初始化 toastr 弹窗位置
+        toastr.options.positionClass = 'toast-center-center';
+
+        toastr.success("成功");
+        toastr.info("通知");
+        toastr.warning("警告");
+        toastr.error("错误");
+
+        clear_toastr(1500);
+
+        // 动态设置toastr消息提示时间,一段时间后清除所有提示框
+       function clear_toastr(time){
+           setTimeout(
+               function(){
+                   toastr.clear();
+           }, time);
+       }
+
+    </script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <input type="button" id="aaa" value="dddd">
+</body>
+</html>

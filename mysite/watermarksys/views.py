@@ -1,9 +1,21 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from .models import *
+import  json
 import os
+def queryuser(phonea):
+    try:
+        usera=users.objects.get(phone=phonea)
+        return 1
+    except:
+        return 0
+def set_default(obj):
+     if isinstance(obj, set):
+         return list(obj)
+     raise TypeError
 def index(request):
     list=users.objects.all()
     context = {'latest_question_list': list}
@@ -27,6 +39,20 @@ def getregister(request):
     watermarks=watermark.objects.all()
     context = {'imagepath': watermarks}
     return render(request,'watermarksys/register.html',context)
+@csrf_exempt
+def register(request):
+
+    phonevalue = request.POST['phonevalue']
+    passwordvalue = request.POST['passwordvalue']
+    if queryuser(phonevalue):
+        backdict = {'code': 0}
+        return JsonResponse(backdict)
+    else:
+        insert = users(phone=phonevalue, password=passwordvalue)
+        insert.save()
+        backdict = {'code': 1}
+        return JsonResponse(backdict)
+
 def getfileload(request):
     if login_check(request)==1:
         return render(request,'watermarksys/watermark_create.html')
