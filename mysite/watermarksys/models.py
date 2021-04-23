@@ -12,7 +12,7 @@ class userinformation(models.Model):
 class watermark(models.Model):
     phone=models.CharField(max_length=11)
     upload_time=models.CharField(max_length=20)
-    syspath=models.CharField(max_length=30,default="")
+    syspath=models.CharField(max_length=60,default="")
     filename=models.CharField(max_length=15,default="")
 
 class cost(models.Model):

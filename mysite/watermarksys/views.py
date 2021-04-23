@@ -1,10 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import JsonResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from .models import *
-import  json
+import datetime
+import json
 import os
 def queryuser(phonea):
     try:
@@ -35,13 +37,35 @@ def login(request):
             return render(request,'watermarksys/main.html')
     except:
         return render(request,'watermarksys/index.html')
+def loginout(request):
+    request.session['islogin']=0
+    return HttpResponseRedirect('/watermarksys')
 def getregister(request):
-    watermarks=watermark.objects.all()
-    context = {'imagepath': watermarks}
-    return render(request,'watermarksys/register.html',context)
+    return render(request,'watermarksys/register.html')
+def gethistory(request):
+    if login_check(request)==1:
+        phoneunm=request.POST['phone']
+
+        return render(request, 'watermarksys/history.html')
+    else:
+        return HttpResponseRedirect('/')
+def getaccount(request):
+    if login_check(request) == 1:
+        return render(request, 'watermarksys/account.html')
+    else:
+        return HttpResponseRedirect('/')
+def getprofile(request):
+    if login_check(request) == 1:
+        return render(request, 'watermarksys/profile.html')
+    else:
+        return HttpResponseRedirect('/')
+def getindex(request):
+    if login_check(request) == 1:
+        return render(request, 'watermarksys/main.html')
+    else:
+        return HttpResponseRedirect('/')
 @csrf_exempt
 def register(request):
-
     phonevalue = request.POST['phonevalue']
     passwordvalue = request.POST['passwordvalue']
     if queryuser(phonevalue):
@@ -52,23 +76,28 @@ def register(request):
         insert.save()
         backdict = {'code': 1}
         return JsonResponse(backdict)
-
-def getfileload(request):
-    if login_check(request)==1:
-        return render(request,'watermarksys/watermark_create.html')
 @csrf_exempt
 def embed(request):
     if login_check(request)==1:
         if request.method == 'POST':
-            file_obj = request.FILES.get('file')
+            phonenum=request.session['phone']
+            file_obj = request.FILES.get('file1')
+            file_obj2 = request.FILES.get('file2')
             baseDir = os.path.dirname(os.path.abspath(__name__))  # 获取运行路径
-            jpgdir = os.path.join(baseDir, 'watermarksys','static','watermarksys','images',str(file_obj.name))  # 加上media路径
+            wjdir=os.path.join(baseDir, 'watermarksys','static','watermarksys','images',phonenum)
+            if not os.path.exists(wjdir):
+                os.makedirs(wjdir)
+            jpgdir = os.path.join(baseDir, 'watermarksys','static','watermarksys','images',phonenum,str(file_obj.name))  # 加上media路径
             print(jpgdir)
+            now_time = datetime.datetime.now()
+            time1_str = datetime.datetime.strftime(now_time, '%Y-%m-%d %H:%M:%S')
+            filesname=str(file_obj.name)[0:16]
             f = open(jpgdir, 'wb')
             print(file_obj, type(file_obj))
             for chunk in file_obj.chunks():
                 f.write(chunk)
             f.close()
-            print('11111')
+            insertwater=watermark(phone=phonenum,upload_time=time1_str,syspath=str(os.path.join('static','watermarksys','images',phonenum,str(file_obj.name))),filename=filesname)
+            insertwater.save()
             return HttpResponse('OK')
 # Create your views here.

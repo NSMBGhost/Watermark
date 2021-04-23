@@ -1,10 +1,39 @@
 
 {% load static %}
+<head>
 <link rel="stylesheet" href="{% static 'watermarksys/lib/css/bootstrap.min.css' %}">
-<form action="{% url 'login'%}" method="post">
+        <style>
+        .container {
+            margin-top: 15%;
+            width: 35%;
+        }
+        .btn-primary {
+            background-color: #337ab7;
+            border-color: #337ab7;
+        }
+        .form-control {
+            margin-bottom: 4px;
+        }
+        </style>
+</head>
+
+
+<body>
+<div class="container">
+    <form action="{% url 'login'%}" method="post" >
     {% csrf_token %}
-    <p>phone:<input type="text" name="phone"></p>
-    <p>password:<input type="text" name="password"></p>
-    <input type="submit" value="submit">
-</form>
-<a href="{% url 'getregister'%}"><button class="btn btn-primary">注册</button></a>
+        <div class="form-signin">
+        <label for="exampleInputUsername" class="sr-only">手机号</label>
+            <input type="text" class="form-control"id="exampleInputUsername"  name="phone"></p>
+        <label for="exampleInputUsername" class="sr-only">密码</label>
+        <input type="text" class="form-control" id="exampleInputPassword" name="password"></p>
+        <input type="submit" value="登录" class="btn btn-primary">
+            </div>
+    </form>
+    <a href="{% url 'getregister'%}"><button class="btn btn-primary">注册</button></a>
+</div>
+</body>
+
+
+
+
