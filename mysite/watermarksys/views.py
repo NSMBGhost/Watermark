@@ -44,8 +44,7 @@ def getregister(request):
     return render(request,'watermarksys/register.html')
 def gethistory(request):
     if login_check(request)==1:
-        phoneunm=request.POST['phone']
-
+        phoneunm=request.session['phone']
         return render(request, 'watermarksys/history.html')
     else:
         return HttpResponseRedirect('/')
