@@ -82,21 +82,21 @@ def embed(request):
             phonenum=request.session['phone']
             file_obj = request.FILES.get('file1')
             file_obj2 = request.FILES.get('file2')
+            filesname = str(file_obj.name)[-10:]
             baseDir = os.path.dirname(os.path.abspath(__name__))  # 获取运行路径
             wjdir=os.path.join(baseDir, 'watermarksys','static','watermarksys','images',phonenum)
             if not os.path.exists(wjdir):
                 os.makedirs(wjdir)
-            jpgdir = os.path.join(baseDir, 'watermarksys','static','watermarksys','images',phonenum,str(file_obj.name))  # 加上media路径
+            jpgdir = os.path.join(baseDir, 'watermarksys','static','watermarksys','images',phonenum,filesname)  # 加上media路径
             print(jpgdir)
             now_time = datetime.datetime.now()
             time1_str = datetime.datetime.strftime(now_time, '%Y-%m-%d %H:%M:%S')
-            filesname=str(file_obj.name)[0:16]
             f = open(jpgdir, 'wb')
             print(file_obj, type(file_obj))
             for chunk in file_obj.chunks():
                 f.write(chunk)
             f.close()
-            insertwater=watermark(phone=phonenum,upload_time=time1_str,syspath=str(os.path.join('static','watermarksys','images',phonenum,str(file_obj.name))),filename=filesname)
+            insertwater=watermark(phone=phonenum,upload_time=time1_str,syspath=str(os.path.join('static','watermarksys','images',phonenum,filesname)),filename=filesname)
             insertwater.save()
             return HttpResponse('OK')
 # Create your views here.
