@@ -19,4 +19,5 @@ urlpatterns = [
     path('updateprofile',views.updateprofile,name='updateprofile'),
     path('changepass',views.changepass,name='changepass'),
     path('download',views.download,name='download'),
+    path('exact',views.exact,name='exact'),
 ]

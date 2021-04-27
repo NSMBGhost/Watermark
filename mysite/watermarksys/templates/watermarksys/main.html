@@ -8,12 +8,13 @@
     <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
     <!--     Fonts and icons     -->
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700,200" rel="stylesheet" />
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" />
+   <link rel="stylesheet" href="{% static 'watermarksys/lib/css/font-awesome.min.css' %}" />
     <!-- CSS Files -->
     <link href="{% static 'watermarksys/lib/css/bootstrap.min.css' %}" rel="stylesheet" />
     <link href="{% static 'watermarksys/lib/css/light-bootstrap-dashboard.css' %}" rel="stylesheet" />
     <!-- CSS Just for demo purpose, don't include it in your project -->
     <link href="{% static 'watermarksys/lib/css/assets/css/demo.css'%}" rel="stylesheet" />
+    <link rel="stylesheet" href="{% static 'watermarksys/lib/css/toastr.min.css' %}">
 
 </head>
 <body>
@@ -59,7 +60,7 @@
             <!-- Navbar -->
             <nav class="navbar navbar-expand-lg " color-on-scroll="500">
                 <div class="container-fluid">
-                    <a class="navbar-brand" href="#pablo"> Dashboard </a>
+                    <a class="navbar-brand" href="#pablo"> 数字水印系统 </a>
                     <button href="" class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-bar burger-lines"></span>
                         <span class="navbar-toggler-bar burger-lines"></span>
@@ -93,10 +94,74 @@
             <!-- End Navbar -->
             <div class="content">
                 <div class="container-fluid">
-                <div>
-            <input type="file" name="file_pic" id="file_upload_pic" class="file">
-             <input type="file" name="file_mark" id="file_upload_mark" class="file">
-            <input type="button" value="上传" onclick="FileUpload()">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header ">
+                                <h4 class="card-title">水印嵌入</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                     <div class="card">
+                                         <div class="card-header ">
+                                            <h4 class="card-title">待嵌入图片</h4>
+                                        </div>
+                                         <div class="card-body">
+                                             <div class="form-group">
+                                                 <br/>
+                                             </div>
+                                             <input type="file" name="file_pic" id="file_upload_pic" class="file">
+                                             <div class="form-group">
+                                                 <p></p>
+                                             </div>
+                                             <div class="form-group">
+                                                 <br/><br/>
+                                             </div>
+                                             <div class="form-group">
+                                                <label>输入要嵌入的信息</label>
+                                                <input type="text" class="form-control" placeholder="" value="" id="inputs">
+                                            </div>
+                                         </div>
+                                     </div>
+                                    </div>
+                                    <div class="col-md-4" style="text-align:center">
+                                        <p></p>
+                                        <input type="button" value="预览二维码" class="btn btn-primary btn-round" onclick="viewqrcode()">
+                                        <p></p>
+                                        <input type="button" value="水印嵌入" class="btn btn-primary btn-round" onclick="FileUpload()">
+                                    </div>
+
+                                    <div class="col-md-4">
+
+                                        <div class="card">
+                                            <div class="card-header ">
+                                            <h4 class="card-title">水印二维码</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div id="qrcode"></div>
+                                            </div>
+                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header ">
+                                <h4 class="card-title">水印提取</h4>
+                            </div>
+                            <div class="card-body">
+                                <form action="{% url 'exact' %}" method="post" enctype="multipart/form-data">
+                                    <input type="file" name="exactfile" >
+                                    <p></p>
+                                  <input type="submit" value="提取水印" class="btn btn-primary btn-round">
+                              </form>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
 
@@ -109,18 +174,23 @@
 <script src="{% static 'watermarksys/lib/js/core/popper.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'watermarksys/lib/js/core/bootstrap.min.js' %}" type="text/javascript"></script>
 <script src="{% static 'watermarksys/lib/js/plugins/bootstrap-switch.js' %}"></script>
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>
 <script src="{% static 'watermarksys/lib/js/plugins/chartist.min.js' %}"></script>
 <script src="{% static 'watermarksys/lib/js/plugins/bootstrap-notify.js' %}"></script>
 <script src="{% static 'watermarksys/lib/js/light-bootstrap-dashboard.js' %}" type="text/javascript"></script>
 <script src="{% static 'watermarksys/lib/js/demo.js' %}"></script>
+<script src="{% static 'watermarksys/lib/js/qrcode.min.js' %}"></script>
+<script src="{% static 'watermarksys/lib/js/toastr.min.js' %}"></script>
 <script>
+     toastr.options={
+            positionClass:"toast-top-center"
+        }
     function FileUpload() {
             var form_data = new FormData();
             var file_info =$( '#file_upload_pic')[0].files[0];
-            var file_info2 =$( '#file_upload_mark')[0].files[0];
+            var texts=$('#inputs').val();
+            //var file_info2 =$( '#file_upload_mark')[0].files[0];
             form_data.append('file1',file_info);
-            form_data.append('file2',file_info2);
+            form_data.append('inputs',texts);
             $.ajax({
                 url:"{% url 'embed'%}",
                 type:'POST',
@@ -128,10 +198,35 @@
                 processData: false,  // tell jquery not to process the data
                 contentType: false, // tell jquery not to set contentType
                 success: function(callback) {
-                    console.log('ok')
+                    if(callback.code==1)
+                    {
+                        toastr.success("生成成功，请前往history下载")
+                    }
+                    else if(callback.code==2){
+                        toastr.error("余额不足")
+                    }
+                    else {
+                        toastr.error("带嵌入的图片太小")
+                    }
                 }
             });
             }
+    function viewqrcode(){
+        var inputevalue=$('#inputs').val();
+        if(inputevalue!=null)
+        {
+            $('#qrcode').html("");
+            var qrcode = new QRCode(document.getElementById("qrcode"), {
+            text: inputevalue,
+            width: 128,
+            height: 128,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+            });
+        }
+
+    }
 </script>
 <!--<script type="text/javascript">-->
 <!--    $(document).ready(function() {-->
