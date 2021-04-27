@@ -2,7 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+
+from django.http import FileResponse
+from django.shortcuts import render,reverse
 from django.views.decorators.csrf import csrf_exempt
 from .models import *
 import datetime
@@ -35,6 +37,8 @@ def login(request):
             request.session['islogin']=1
             request.session['phone']=getuser.phone
             return render(request,'watermarksys/main.html')
+        else:
+            return render(request, 'watermarksys/index.html')
     except:
         return render(request,'watermarksys/index.html')
 def loginout(request):
@@ -45,9 +49,11 @@ def getregister(request):
 def gethistory(request):
     if login_check(request)==1:
         phoneunm=request.session['phone']
-        return render(request, 'watermarksys/history.html')
+        getwatermark=watermark.objects.filter(phone=phoneunm)
+        context={'getwatermark':getwatermark}
+        return render(request, 'watermarksys/history.html',context)
     else:
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect("/watermarksys")
 def getaccount(request):
     if login_check(request) == 1:
         return render(request, 'watermarksys/account.html')
@@ -55,7 +61,13 @@ def getaccount(request):
         return HttpResponseRedirect('/')
 def getprofile(request):
     if login_check(request) == 1:
-        return render(request, 'watermarksys/profile.html')
+        phoneunm = request.session['phone']
+        getuserinformation=userinformation.objects.get(phone=phoneunm)
+        context={'company':getuserinformation.company,
+                 'address':str(getuserinformation.address).rstrip(),
+                 'money':str(getuserinformation.money).rstrip(),
+                 'phone':phoneunm}
+        return render(request, 'watermarksys/profile.html',context)
     else:
         return HttpResponseRedirect('/')
 def getindex(request):
@@ -99,4 +111,74 @@ def embed(request):
             insertwater=watermark(phone=phonenum,upload_time=time1_str,syspath=str(os.path.join('static','watermarksys','images',phonenum,filesname)),filename=filesname)
             insertwater.save()
             return HttpResponse('OK')
+    else:
+        return HttpResponseRedirect("/watermarksys")
+@csrf_exempt
+def updateprofile(request):
+    if login_check(request) == 1:
+        newcompany=request.POST['company']
+        newaddress=request.POST['address']
+        phonenum=request.session['phone']
+        updatepro=userinformation.objects.get(phone=phonenum)
+        updatepro.company=newcompany
+        updatepro.address=newaddress
+        updatepro.save()
+        #getuserinformation = userinformation.objects.get(phone=
+
+        context={'phone':phonenum,
+                 'money':updatepro.money,
+                 'address':str(newaddress).rstrip(),
+                 'company':str(newcompany).rstrip()}
+        return render(request, 'watermarksys/profile.html', context)
+    else:
+        return HttpResponseRedirect('/')
+@csrf_exempt
+def changepass(request):
+    if login_check(request) == 1:
+        oldpass=request.POST['oldpass']
+        newpass=request.POST['newpass']
+        getusers=users.objects.get(phone=request.session['phone'])
+        if(getusers.password==oldpass):
+            getusers.password=newpass
+            getusers.save()
+            request.session['islogin']=0
+            redict = {'code': 1}
+            return JsonResponse(redict)
+        else:
+            redict={'code':0}
+            return JsonResponse(redict)
+    else:
+        return HttpResponseRedirect("/watermarksys")
+def getcookie(request):
+    if(request.POST.get('id')):
+        return request.POST.get('id')
+    elif request.COOKIES['id']:
+        return request.COOKIES['id']
+    else:
+        return -1
+@csrf_exempt
+def download(request):
+    if login_check(request)==1:
+        if request.method == 'POST':
+            phonenum = request.session['phone']
+            getid=getcookie(request)
+            if(getid==-1):
+                retu = {'code': 2}
+                return JsonResponse(retu)
+            try:
+                getwater=watermark.objects.get(pk=getid)
+                baseDir = os.path.dirname(os.path.abspath(__name__))  # 获取运行路径
+                syspath=getwater.syspath
+                wjdir=os.path.join(baseDir,"watermarksys",syspath)
+                file=open(wjdir,'rb')
+                respon=FileResponse(file)
+                respon['Content-Type'] = 'application/octet-stream'
+                respon['Content-Disposition'] = 'attachment; filename=' + getwater.filename
+                respon.set_cookie('id',getid)
+                return respon
+            except:
+                retu={'code':0}
+                return JsonResponse(retu)
+    else:
+        return HttpResponseRedirect("/watermarksys")
 # Create your views here.
