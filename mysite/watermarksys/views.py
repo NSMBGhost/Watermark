@@ -89,6 +89,8 @@ def register(request):
         return JsonResponse(backdict)
     else:
         insert = users(phone=phonevalue, password=passwordvalue)
+        insert2=userinformation(phone=phonevalue,company="",address="",money=1)
+        insert2.save()
         insert.save()
         backdict = {'code': 1}
         return JsonResponse(backdict)
