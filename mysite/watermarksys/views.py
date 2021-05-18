@@ -108,6 +108,8 @@ def embed(request):
             qr=qrcode.make(embstr)
             bwm1 = WaterMark(password_wm=1, password_img=1)
             filesname = str(file_obj.name)[-10:]
+            filenamelist=filesname.split('.')
+            filesname=filenamelist[0]+'.png'
             baseDir = os.path.dirname(os.path.abspath(__name__))  # 获取运行路径
             temdir=os.path.join(baseDir, 'watermarksys','static','watermarksys','images',phonenum,'temp')
             if os.path.exists(temdir):
@@ -123,7 +125,7 @@ def embed(request):
             qr = cv2.imread(temdir_qr, 1)
             qr2 = cv2.resize(qr, (64, 64))
             cv2.imwrite(os.path.join(temdir,'qr2.png'), qr2)
-            bwm1 = WaterMark(password_wm=1, password_img=1)
+            bwm1 = WaterMark(password_wm=1, password_img=1,d1=15,d2=1)
             bwm1.read_img(temdir_pic)
             bwm1.read_wm(os.path.join(temdir,'qr2.png'))
             wjdir=os.path.join(baseDir, 'watermarksys','static','watermarksys','images',phonenum)
@@ -231,10 +233,10 @@ def exact(request):
             for chunk in obj.chunks():
                 f.write(chunk)
             f.close()
-            bwm1 = WaterMark(password_wm=1, password_img=1)
+            bwm1 = WaterMark(password_wm=1, password_img=1,d1=15,d2=1)
             type=filesname[-4:]
             jpgdir=os.path.join(temdir,filesname)
-            newname='new'+type
+            newname='new.png'
             newdir=os.path.join(temdir,newname)
             bwm1.extract(jpgdir,(64,64),newdir)
             file = open(newdir, 'rb')
