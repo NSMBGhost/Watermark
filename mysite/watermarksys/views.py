@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.http import HttpResponseRedirect
-
+import tensorflow as tf
+from tensorflow.keras.preprocessing import image
 from django.http import FileResponse
 from django.shortcuts import render,reverse
 from django.views.decorators.csrf import csrf_exempt
@@ -282,7 +283,15 @@ def embed(request):
             qr = cv2.imread(temdir_qr, 1)
             qr2 = cv2.resize(qr, (64, 64))
             cv2.imwrite(os.path.join(temdir,'qr2.png'), qr2)
-            bwm1 = WaterMark(password_wm=1, password_img=1,d1=15,d2=1)
+            model = tf.keras.models.load_model(os.path.join(baseDir, 'watermarksys','static','watermarksys','mymodel','my_resnet_model_1.h5'))
+            img = image.load_img(temdir_pic, target_size=(224, 224))
+            img = image.img_to_array(img) / 255.0
+            img = np.expand_dims(img, axis=0)  # 为batch添加第四维
+            resultrec=np.argmax(model.predict(img))
+            if resultrec==0:
+                bwm1 = WaterMark(password_wm=1, password_img=1,d1=15,d2=1)
+            else:
+                bwm1 = WaterMark(password_wm=1, password_img=1, d1=30, d2=1)
             bwm1.read_img(temdir_pic)
             bwm1.read_wm(os.path.join(temdir,'qr2.png'))
             wjdir=os.path.join(baseDir, 'watermarksys','static','watermarksys','images',phonenum)
