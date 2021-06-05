@@ -286,6 +286,7 @@ def embed(request):
             bwm1.read_img(temdir_pic)
             bwm1.read_wm(os.path.join(temdir,'qr2.png'))
             wjdir=os.path.join(baseDir, 'watermarksys','static','watermarksys','images',phonenum)
+
             if not os.path.exists(wjdir):
                 os.makedirs(wjdir)
             jpgdir = os.path.join(baseDir, 'watermarksys','static','watermarksys','images',phonenum,filesname)  # 加上media路径
