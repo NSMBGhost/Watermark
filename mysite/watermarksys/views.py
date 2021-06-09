@@ -191,7 +191,8 @@ def login_check(request):
     if request.session['islogin']==1:
         return 1
     else:
-        return render(request,'watermarksys/index.html')
+        return 0
+        #return render(request,'watermarksys/index.html')
 def login(request):
     try:
         getuser=users.objects.get(phone=request.POST['phone'])
@@ -232,12 +233,12 @@ def getprofile(request):
                  'phone':phoneunm}
         return render(request, 'watermarksys/profile.html',context)
     else:
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect("/watermarksys")
 def getindex(request):
     if login_check(request) == 1:
         return render(request, 'watermarksys/main.html')
     else:
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect("/watermarksys")
 @csrf_exempt
 def register(request):
     phonevalue = request.POST['phonevalue']
